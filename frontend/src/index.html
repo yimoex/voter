@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voter</title>
+    <link rel="stylesheet" href="./assets/layui/css/layui.css">
+    <style>
+        body {
+            font-family: '微软雅黑', sans-serif;
+            font-size: 16px;
+            background-color: #f4f7fc;
+            color: #333;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .layui-card {
+            margin-bottom: 20px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+        .layui-card-header {
+            background-color: #4e73df;
+            color: #fff;
+            border-radius: 8px 8px 0 0;
+            padding: 15px;
+        }
+        .layui-card-body {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 0 0 8px 8px;
+        }
+        .info-item {
+            margin-bottom: 15px;
+        }
+        .info-label {
+            font-weight: bold;
+            color: #555;
+            margin-right: 10px;
+        }
+        .layui-btn-container {
+            text-align: center;
+            margin-top: 30px;
+        }
+        .layui-btn {
+            padding: 2px 24px;
+            background-color: #4e73df;
+            color: #fff;
+            border-radius: 5px;
+            font-size: 16px;
+            border: none;
+            cursor: pointer;
+        }
+        .layui-btn:hover {
+            background-color: #2e59d9;
+        }
+        .person-box {
+            display: inline-block;
+            padding: 6px 12px;
+            margin: 5px;
+            background-color: #e0e0e0;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        .layui-input-block {
+            margin-bottom: 15px;
+        }
+        .layui-form-label {
+            font-weight: bold;
+        }
+        .layui-input, .layui-textarea {
+            width: 100%;
+            padding: 10px;
+            font-size: 14px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        .layui-input:focus, .layui-textarea:focus {
+            border-color: #4e73df;
+            box-shadow: 0 0 5px rgba(78, 115, 223, 0.3);
+        }
+        .layui-form-item {
+            margin-bottom: 20px;
+        }
+        .auto-line {
+            width: auto;
+            word-wrap: break-word;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="layui-card auto-line" id="selfDisplay">
+        </div>
+        <div class="layui-card">
+            <div class="layui-card-header" id="statusHeader">
+                <h3>上一次的抽取状态</h3>
+            </div>
+            <div class="layui-card-body" id="lastStatus">
+                <div class="info-item">
+                    <span class="info-label">子区块索引:</span>
+                    <span id="voter"></span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">请求者:</span>
+                    <span id="user" class="auto-line"></span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">请求时间:</span>
+                    <span id="timer"></span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">请求信息:</span>
+                    <span id="info"></span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">范围:</span>
+                    <span id="range"></span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">个数:</span>
+                    <span id="count"></span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">排除的人:</span>
+                    <div id="ex"></div>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">上次抽到的人:</span>
+                    <div id="last"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="layui-card" id="createLayer">
+            <div class="layui-card-header">
+                <h3>创建新抽取</h3>
+            </div>
+            <div class="layui-card-body">
+                <div class="layui-form">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">备注信息</label>
+                        <div class="layui-input-block">
+                            <input id="createInfo" placeholder="请输入备注信息" class="layui-input"></input>
+                        </div>
+                    </div>
+
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">起始范围</label>
+                        <div class="layui-input-block">
+                            <input type="text" id="createStart" required lay-verify="required|number" placeholder="请输入起始数字" autocomplete="off" class="layui-input">
+                        </div>
+                    </div>
+
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">结束范围</label>
+                        <div class="layui-input-block">
+                            <input type="text" id="createEnd" required lay-verify="required|number" placeholder="请输入结束范围" autocomplete="off" class="layui-input">
+                        </div>
+                    </div>
+
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">个数</label>
+                        <div class="layui-input-block">
+                            <input type="number" id="createCount" required lay-verify="required|number" placeholder="请输入个数" autocomplete="off" class="layui-input">
+                        </div>
+                    </div>
+
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">排除的人(英文逗号分隔)</label>
+                        <div class="layui-input-block">
+                            <input type="number" name="exIncludes" placeholder="请输入个数" autocomplete="off" class="layui-input">
+                        </div>
+                    </div>
+
+                    <div class="layui-form-item">
+                        <div class="layui-input-block">
+                            <button class="layui-btn" lay-submit id="create">确定</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="layui-container" id="createLayer">
+
+    </div>
+</body>
+
+
+<script src="assets/web3/web3.min.js"></script>
+<script src="assets/web3/wallet.js"></script>
+<script src="assets/web3/helper.js"></script>
+<script src="assets/layui/layui.js"></script>
+<script>
+    var provider = new Provider();
+
+    if(null != provider.web3){
+        refresh();
+        provider.walletConnect((address) => {
+            document.getElementById('selfDisplay').innerHTML = '已链接账号: ' + address;
+            console.log('链接地址: ' + address);
+        }, (error) => {
+            document.getElementById('selfDisplay').innerHTML = '无法链接钱包! ' + error;
+            console.log('链接失败: ' + error);
+        });
+    }else{
+        document.getElementById('createLayer').setAttribute('style', 'display: none;');
+        document.getElementById('statusHeader').innerHTML = '链接失败';
+        document.getElementById('lastStatus').innerHTML = '<div class="info-item"><span>无法链接钱包</span></div>';
+        layer.confirm('没有检测到钱包,无法使用该功能!<br>请使用其他功能!', {icon: 2}, () => {
+            window.location.href = '/';
+        }, () => {
+            window.location.href = '/';
+        });
+    }
+
+    function refresh(){
+        provider.voterReadLast((response) => {
+            provider.voterIndex((index) => {
+                document.getElementById('voter').innerHTML = index;
+            }, (err) => {
+                document.getElementById('voter').innerHTML = '错误';
+            });
+            document.getElementById('user').innerHTML = response.user;
+            document.getElementById('timer').innerHTML = Helper.time2date(Number(response.timer) * 1000);
+            document.getElementById('range').innerHTML = response.start + '-' + response.end;
+            document.getElementById('count').innerHTML = response.size;
+            document.getElementById('info').innerHTML = response.message;
+            response.exIncludes.forEach(n => {
+                ex.innerHTML += '<div class="person-box">' + Number(n) + '</div>';
+            });
+            response.numbers.forEach(n => {
+                last.innerHTML += '<div class="person-box">' + Number(n) + '</div>';
+            });
+        });
+    }
+
+    Helper.addListener('create', 'click', async () => {
+        var info = Helper.getInputValue('createInfo', '无');
+        var start = Helper.getInputValue('createStart');
+        var end = Helper.getInputValue('createEnd');
+        var count = Helper.getInputValue('createCount');
+        var ex = Helper.getInputValue('exIncludes', []);
+        if(!start || !end || !count) return false;
+        var index = layer.load(1);
+
+        var gas = await voterGasPrice(start, end, count, ex, info);
+        var gasPrice = await provider.gasPrice();
+        var rawFee = gasPrice * gas;
+        var fee = provider.web3.utils.fromWei(rawFee.toString(), 'ether');
+
+        layer.close(index);
+        text  = '当前估计Gas费用: ' + gas + ' wei<br>';
+        text += '当前Gas价格: ' + gasPrice + ' gwei<br>';
+        text += '预计费用: ' + fee + '<br>';
+        layer.confirm(text, {icon: 3}, async function(){
+            layer.msg('正在签署交易', {icon: 1});
+            var receipt = await provider.voterCreate(start, end, count, info, ex);
+            if(!receipt) return;
+            //console.log(receipt);
+            var transactionHash = receipt.transactionHash; 
+            var blockHash = receipt.blockHash; 
+            var blockNumber = receipt.blockNumber;
+            //这里可以写交易回执后其他事件
+            refresh();
+        }, function(){
+            layer.msg('已取消交易');
+        });
+    });
+
+    async function voterGasPrice(start, end, count, ex = [], info){
+        start = provider.web3.utils.toBigInt(start);
+        end = provider.web3.utils.toBigInt(end);
+        count = provider.web3.utils.toBigInt(count);
+        exIncludes = [];
+        if(ex != null && ex.length != 0) ex.forEach(e => {
+            exIncludes.push(provider.web3.utils.toBigInt(e));
+        });
+        return await provider.voterEstimate(start, end, count, info, exIncludes);
+    }
+    
+</script>
+</body>
+</html>
